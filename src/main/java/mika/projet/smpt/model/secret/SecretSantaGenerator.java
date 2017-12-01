@@ -39,37 +39,32 @@ public class SecretSantaGenerator {
         return secretSantas;
     }
 
-    // TODO complexité terrible --> devra etre amélioré dans le futur
-    public List<Group> generateGroups(List<Personne> victims) {
+    public List<Group> generateGroups(List<Personne> participants) {
 
         Boolean isValid;
         List<Group> groups;
         do {
             isValid=true;
             groups = new ArrayList<Group>();
-            List<Personne> senders = new ArrayList<Personne>(victims);
-            List<Personne> recievers = new ArrayList<Personne>(victims);
-            Collections.shuffle(senders);
-            Collections.shuffle(recievers);
+            Collections.shuffle(participants);
 
-            for (int i = 0; i < victims.size(); ++i) {
+            for (int i = 0; i < participants.size(); ++i) {
                 groups.add(new Group());
+                groups.get(i).setSecretSanta(participants.get(i));
+                groups.get(i).setReciever(participants.get((i+1)%participants.size()));
+                isValid &= groups.get(i).isValid();
             }
 
-            int i = 0;
-            Group groupCible;
-            while (recievers.size() > 0) {
-                groupCible = groups.get(i);
-                i = (i + 1) % groups.size();
-                groupCible.setReciever(recievers.remove(0));
-                groupCible.setSecretSanta(senders.remove(0));
-            }
-            //Les n groupes sont crées, maintenant il faut voir s'ils sont valide
-            for (Group g: groups) {
-                isValid &= g.isValid();
-            }
         }while(!isValid);
 
+        //pour debug, verification dans la console
+        /*
+        int i = 1;
+        for (Group g :groups) {
+            System.out.println("Groupe "+i+": "+g.getSecretSanta().getName() +" est le santa de "+ g.getReciever().getName());
+            i++;
+        }
+        */
         return groups;
     }
 }
